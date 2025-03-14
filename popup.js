@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Reset streak count
     resetBtn.addEventListener("click", () => {
-        chrome.storage.local.set({ streakCount: 0 }, () => {
+        chrome.storage.local.set({ streakCount: 0, lastSubmissionDate: null }, () => {
             streakCount.textContent = "0";
             statusMessage.textContent = "💔 Streak reset!";
         });

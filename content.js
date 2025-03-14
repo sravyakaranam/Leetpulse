@@ -1,8 +1,8 @@
 console.log("✅ LeetCode Streak Tracker: content.js loaded");
 
-// Inject inject.js
+// Function to inject inject.js safely
 function injectScript() {
-    console.log("⏳ Waiting for DOM to load before injecting...");
+    console.log("⏳ Injecting inject.js...");
 
     const script = document.createElement("script");
     script.src = chrome.runtime.getURL("inject.js");
@@ -20,12 +20,13 @@ function injectScript() {
     }
 }
 
-// Relay messages from inject.js to background.js
+// Relay messages from inject.js to background.js safely
 window.addEventListener("message", (event) => {
     if (event.source !== window || !event.data || event.data.source !== "leetcode-tracker") return;
 
     console.log("📩 Message received in content.js from inject.js:", event.data);
 
+    // Ensure extension context is still valid before sending message
     if (chrome.runtime && chrome.runtime.id) {
         chrome.runtime.sendMessage(event.data, (response) => {
             if (chrome.runtime.lastError) {
@@ -35,12 +36,14 @@ window.addEventListener("message", (event) => {
             }
         });
     } else {
-        console.error("🚨 Extension context invalidated! Reloading extension...");
+        console.error("❌ Extension context invalidated! Attempting to reload content script...");
+        setTimeout(() => {
+            location.reload();  // Reload content script if context is lost
+        }, 1000);
     }
-    
 });
 
-// Run injection when DOM is ready
+// Run script injection when DOM is ready
 if (document.readyState === "complete") {
     injectScript();
 } else {
