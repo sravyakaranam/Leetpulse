@@ -3,7 +3,7 @@
     "name": "LeetCode Streak Tracker",
     "version": "1.0",
     "description": "Tracks your LeetCode daily streak.",
-    "permissions": ["storage", "activeTab", "scripting"],
+    "permissions": ["storage", "tabs", "activeTab", "scripting"],
     "host_permissions": ["https://leetcode.com/*"],
     "background": {
         "service_worker": "background.js"

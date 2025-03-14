@@ -26,13 +26,18 @@ window.addEventListener("message", (event) => {
 
     console.log("📩 Message received in content.js from inject.js:", event.data);
 
-    chrome.runtime.sendMessage(event.data, (response) => {
-        if (chrome.runtime.lastError) {
-            console.error("🚨 Error sending message to background.js:", chrome.runtime.lastError);
-        } else {
-            console.log("📩 Successfully relayed message to background.js!", response);
-        }
-    });
+    if (chrome.runtime && chrome.runtime.id) {
+        chrome.runtime.sendMessage(event.data, (response) => {
+            if (chrome.runtime.lastError) {
+                console.error("🚨 Error sending message to background.js:", chrome.runtime.lastError);
+            } else {
+                console.log("📩 Successfully relayed message to background.js!", response);
+            }
+        });
+    } else {
+        console.error("🚨 Extension context invalidated! Reloading extension...");
+    }
+    
 });
 
 // Run injection when DOM is ready
