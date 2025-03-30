@@ -5,6 +5,7 @@
     "description": "Tracks your daily LeetCode problem-solving streak.",
     "permissions": ["storage", "activeTab", "scripting", "webRequest"],
     "host_permissions": ["https://leetcode.com/*"],
+
     "background": {
       "service_worker": "background.js"
     },

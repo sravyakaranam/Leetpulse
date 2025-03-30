@@ -1,3 +1,4 @@
+// background.js
 chrome.webRequest.onCompleted.addListener(
     function(details) {
         if (details.url.includes("submissions/detail/") && details.statusCode === 200) {
@@ -7,35 +8,54 @@ chrome.webRequest.onCompleted.addListener(
     { urls: ["*://leetcode.com/*"] }
 );
 
-function updateStreak() {
-    let today = new Date().toISOString().split("T")[0]; // Get today's date in UTC
+// Encapsulated function to avoid breaking existing logic
+function getRandomQuote() {
+    const motivationalQuotes = [
+        "Discipline beats motivation. Show up daily. 🧱",
+        "You’re not always gonna feel like it — do it anyway.",
+        "One step at a time. Today > yesterday.",
+        "Consistency builds legends. Not magic.",
+        "Each solved problem is proof you're growing.",
+        "Grit > talent. You’re building mental strength.",
+        "You're doing hard things — that’s how growth feels.",
+        "This streak? It’s who you are becoming.",
+        "Earn your future one line of code at a time.",
+        "Greatness is built in silence. Keep going."
+    ];
+    return motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+}
 
-    chrome.storage.sync.get(["lastSubmissionDate", "streakCount"], function(data) {
-        let lastSubmissionDate = data.lastSubmissionDate || null;
-        let streakCount = data.streakCount !== undefined ? data.streakCount : 0;
+function updateStreak() {
+    const today = new Date().toISOString().split("T")[0];
+
+    chrome.storage.sync.get(["lastSubmissionDate", "streakCount"], (data) => {
+        const lastSubmissionDate = data.lastSubmissionDate;
+        let streakCount = data.streakCount || 0;
 
         if (lastSubmissionDate === today) {
-            console.log("Already submitted today. Streak unchanged.");
-            return;
+            console.log("Already submitted today. No update needed.");
+            return;  // prevent multiple submissions per day counting extra
         }
 
-        if (!lastSubmissionDate) {
-            // First submission ever
-            streakCount = 1;
+        const yesterday = new Date();
+        yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split("T")[0];
+
+        if (lastSubmissionDate === yesterdayStr) {
+            streakCount += 1;
         } else {
-            let yesterday = new Date();
-            yesterday.setUTCDate(yesterday.getUTCDate() - 1);
-            let yesterdayStr = yesterday.toISOString().split("T")[0];
-
-            if (lastSubmissionDate === yesterdayStr) {
-                streakCount += 1;
-            } else {
-                streakCount = 1; // Reset if a day is missed
-            }
+            streakCount = 1;  // reset streak
         }
 
-        chrome.storage.sync.set({ lastSubmissionDate: today, streakCount: streakCount }, function() {
-            console.log("Updated streak:", streakCount);
+        const newQuote = getRandomQuote();
+
+        chrome.storage.sync.set({
+            lastSubmissionDate: today,
+            streakCount: streakCount,
+            dailyQuote: newQuote
+        }, () => {
+            console.log("✅ Streak updated:", streakCount);
+            console.log("✅ Today's quote:", newQuote);
         });
     });
 }

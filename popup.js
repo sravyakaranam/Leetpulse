@@ -1,9 +1,10 @@
+// popup.js
 document.addEventListener("DOMContentLoaded", function() {
-    chrome.storage.sync.get("streakCount", function(data) {
-        document.getElementById("streak").innerText = data.streakCount || 0;
-    });
+    chrome.storage.sync.get(["streakCount", "dailyQuote"], function(data) {
+        const streakElem = document.getElementById("streak");
+        const quoteElem = document.getElementById("quote");
 
-    chrome.storage.sync.get("lastSubmissionDate", function(data) {
-        console.log("Last Submission Date:", data.lastSubmissionDate);
+        if (streakElem) streakElem.innerText = data.streakCount || 0;
+        if (quoteElem) quoteElem.innerText = data.dailyQuote || "Solve one to get hyped 😎";
     });
 });
